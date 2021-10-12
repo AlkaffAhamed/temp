@@ -1,2 +1,2 @@
-# temp
-temp
+# Temp
+This is a Temporary Repo

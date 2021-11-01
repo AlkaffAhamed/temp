@@ -39,6 +39,7 @@ const editListing = (data) =>
 
 export const Marketplace = () => {
   const [clicked, setClicked] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [listings, setListings] = useState(undefined);
   const [listing, setListing] = useState({
     id: "",
@@ -72,6 +73,31 @@ export const Marketplace = () => {
     loadListings();
   }, []);
 
+  function handleDeleteListing(id)
+  {
+    deleteListing(id).then(() => loadListings())
+  }
+
+  function handleEditListingStart(listing)
+  {
+    setListing(listing)
+    setIsEditing(true)
+  }
+
+  function handleEditListingEnd()
+  {
+    resetListing()
+    setIsEditing(false)
+  }
+
+  function handleEditListingForm(listing)
+  {
+    editListing(listing)
+    .then(() => loadListings())
+    .then(() => handleEditListingEnd())
+  }
+
+
   return (
     <div className="lg:flex bg-gray-50">
       <div className="flex-1">
@@ -83,17 +109,21 @@ export const Marketplace = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-x-4 gap-y-8 xl:grid-cols-3 xl:gap-x-6">
             {listings &&
-              listings.map((listing) => (
+              listings.map((i) => (
                 <ListingItem
-                  imageUrl={listing.imageUrl}
-                  title={listing.title}
-                  description={listing.description}
-                  price={listing.price}
-                  availableStock={listing.numOfStock}
-                  onlyOne={listing.availability === "single-item"}
-                  key={listing._id}
-                  onEdit={editListing}
-                  onDelete={deleteListing}
+                  imageUrl={i.imageUrl}
+                  title={i.title}
+                  description={i.description}
+                  price={i.price}
+                  availableStock={i.numOfStock}
+                  condition={i.condition}
+                  onlyOne={i.availability === "single-item"}
+                  key={i._id}
+                  id={i._id}
+                  onEdit={handleEditListingStart}
+                  onDelete={handleDeleteListing}
+                  onEditEnd={handleEditListingEnd}
+                  isEditing={i._id === listing.id}
                 />
               ))}
           </div>
@@ -111,15 +141,18 @@ export const Marketplace = () => {
           )}
         </div>
       </div>
-      <ListingForm listing={listing} />
+      <ListingForm 
+        listing={listing} 
+        isEditing={isEditing}
+        handleEdit={handleEditListingForm} />
     </div>
   );
 };
 
-const ListingForm = ({listing}) => 
+const ListingForm = ({listing, isEditing, handleEdit}) => 
 {
   const [isAdding, setIsAdding] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  //const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(listing.title);
   const [description, setDescription] = useState(listing.description);
   const [price, setPrice] = useState(listing.price);
@@ -155,7 +188,7 @@ const ListingForm = ({listing}) =>
   function handleEditListing() {
     console.log("EDIT HANDLE")
     console.log(listing, isAdding, isEditing, title, description, price, condition, availability, numOfStock)
-    editListing({
+    handleEdit({
       id: listing.id,
       title,
       condition,
@@ -164,7 +197,8 @@ const ListingForm = ({listing}) =>
       imageUrl: "",
       numOfStock: Number(numOfStock) || 0,
       price: Number(price),
-    }).then(() => setIsEditing(false));
+    })
+    //.then(() => setIsEditing(false));
   }
 
 

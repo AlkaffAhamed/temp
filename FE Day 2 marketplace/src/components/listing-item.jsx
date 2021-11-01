@@ -14,7 +14,7 @@ const EditButton = (props) => (
     >
       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
     </svg>
-    EDIT
+    {props.children}
   </button>
 );
 
@@ -83,8 +83,29 @@ export const ListingItem = (props) => {
           </p>
         </div>
         <div className="flex flex-col md:flex-row gap-3 py-3">
-          <EditButton onClick={props.onEdit} />
-          <DeleteButton onClick={props.onDelete}>
+          {/* <EditButton onClick={props.onEdit(props.id)} /> */}
+          <EditButton onClick={() => 
+          {
+            props.isEditing
+              ? props.onEditEnd()
+              : props.onEdit({
+                  id: props.id,
+                  title: props.title,
+                  description: props.description,
+                  price: props.price,
+                  condition: props.condition,
+                  imageUrl: props.imageUrl,
+                  availability: props.availability,
+                  numOfStock: props.availableStock,
+              })
+          }} > 
+          {props.isEditing ? "EDITING..." : "EDIT"}
+          </EditButton>
+          <DeleteButton onClick={ () =>
+          {
+            setIsDeleting(true)
+            props.onDelete(props.id)
+          }}>
             {isDeleting ? "DELETING..." : "DELETE"}
           </DeleteButton>
         </div>

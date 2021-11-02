@@ -1,3 +1,4 @@
+ListingItem example:
 ```jsx
 <div className="grid md:grid-cols-2 gap-x-4 gap-y-8 xl:grid-cols-3 xl:gap-x-6">
   <ListingItem

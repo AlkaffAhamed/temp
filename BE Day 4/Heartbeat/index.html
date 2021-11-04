@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Websocket Exercise</title>
+</head>
+
+<body>
+    <h1>BE Homework 4 - WebSocket Exercise</h1>
+    <p>This page listens to a broadcast using WebSocket technology and update the page content in real time.</p>
+    <div id='msgWindow'></div>
+</body>
+
+<script>
+    const WS_PORT = '3030'
+    const WS_ADDR = `ws://localhost:${WS_PORT}`
+    const WINDOW_SIZE = 20
+    const msgWindow = document.getElementById('msgWindow')
+    var   msgCnt = 0
+    const addMessage = (message) => {
+        const pNew = document.createElement('p');
+        pNew.appendChild(document.createTextNode(message));
+        if (msgCnt===0) {
+            msgWindow.appendChild(pNew);
+        } else {
+            msgWindow.insertBefore(pNew,msgWindow.firstChild);
+        }
+        msgCnt = msgCnt + 1
+        if (msgCnt > WINDOW_SIZE) {
+            if (msgCnt > WINDOW_SIZE+1) {
+                msgWindow.removeChild(msgWindow.lastChild)
+            }
+            msgWindow.removeChild(msgWindow.lastChild)
+            const pDiscard = document.createElement('p');
+            pDiscard.appendChild(document.createTextNode(`${msgCnt-WINDOW_SIZE} message${msgCnt-WINDOW_SIZE<2?'':'s'} discarded.`))
+            msgWindow.appendChild(pDiscard)
+        }
+    };
+
+    const ws = new WebSocket(WS_ADDR);
+    ws.onopen = () => {
+        addMessage('Websocket connected to ' + WS_ADDR);
+    };
+    ws.onmessage = (event) => {
+        addMessage(event.data)
+    };
+
+</script>
+</html>
